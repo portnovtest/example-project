@@ -1,23 +1,23 @@
 package com.sample.tests.testng;
 
+import com.sample.framework.Configuration;
+import com.sample.framework.Driver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.concurrent.TimeUnit;
 
 public class SampleSearchTestNGTest {
     private WebDriver driver;
 
     @BeforeMethod(alwaysRun = true)
-    public void setUp() throws InterruptedException {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        driver.get("https://www.booking.com/searchresults.html");
+    public void setUp() throws Exception {
+        DesiredCapabilities cap = new DesiredCapabilities();
+        Driver.add(Configuration.get("browser"),cap);
+        driver = Driver.current();
+        driver.get(Configuration.get("url"));
 
     }
     @AfterMethod(alwaysRun = true)
