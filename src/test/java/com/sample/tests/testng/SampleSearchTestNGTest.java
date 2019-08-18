@@ -41,6 +41,6 @@ public class SampleSearchTestNGTest {
         SearchResultsPage searchResultsPage = searchPage.buttonSubmit.click(SearchResultsPage.class);
         searchResultsPage.editDestination.click();
         assertTrue(searchResultsPage.isTextPresent("London"));
-
+        searchResultsPage.captureScreenShot("./image-London.png");
     }
 }
