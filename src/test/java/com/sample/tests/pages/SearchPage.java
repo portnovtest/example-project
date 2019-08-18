@@ -16,7 +16,9 @@ public class SearchPage extends Page {
     public Control displayDates;
     @FindBy(locator = "//td[contains(@class, 'c2-day-s-today')]")
     public Control buttonTodaysDate;
-    @FindBy(locator = "//input[@name='sb_travel_purpose']")
+    @FindBy(locator = "//input[@name='sb_travel_purpose' and @value='leisure']")
+    public Control checkBoxLeisure;
+    @FindBy(locator = "//input[@name='sb_travel_purpose' and @value='business']")
     public Control checkBoxBusiness;
     @FindBy(locator = "//button[@type='submit']")
     public Control buttonSubmit;
@@ -24,5 +26,14 @@ public class SearchPage extends Page {
 
     public SearchPage(WebDriver driver) {
         super(driver);
+    }
+
+    public SearchPage setTravelPurpose(boolean isBusiness){
+        if (isBusiness){
+            this.checkBoxBusiness.click();
+        } else {
+            //"don't click";
+        }
+        return this;
     }
 }
