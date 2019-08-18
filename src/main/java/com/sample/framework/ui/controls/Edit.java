@@ -1,13 +1,12 @@
 package com.sample.framework.ui.controls;
 
-import com.sample.framework.ui.Control;
+import com.sample.framework.ui.Page;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 
 public class Edit extends Control {
 
-    public Edit(WebDriver driver, By locator) {
-        super(driver, locator);
+    public Edit(Page parentValue, By locatorValue) {
+        super(parentValue, locatorValue);
     }
 
     public void setText(String text){
