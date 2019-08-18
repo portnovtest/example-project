@@ -5,12 +5,22 @@ import com.sample.framework.Driver;
 import com.sample.framework.ui.PageFactory;
 import com.sample.tests.pages.SearchPage;
 import com.sample.tests.pages.SearchResultsPage;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.sql.*;
+import java.util.List;
+import java.util.Properties;
 
 import static org.testng.Assert.assertTrue;
 
@@ -48,6 +58,69 @@ public class SampleSearchTestNGTest {
         }
     }
 
+    @DataProvider(name = "file_provider")
+    public Object[][] getDataFromFile() throws IOException {
+        List<String> content = FileUtils.readLines(new File("./src/test/resources/data.csv")
+                , Charset.defaultCharset());
+        Object[][] data = new Object[][] {};
+        for (String line : content) {
+            data = ArrayUtils.add(data, line.split("\t"));
+        }
+        return data;
+    }
+
+    @DataProvider(name = "service_provider")
+    public Object[][] getDataFromService(){
+        HttpClient client = new HttpClient();
+        GetMethod method = new GetMethod("http://localhost:4999/test");
+        String result = "";
+        try {
+            int statusCode = client.executeMethod(method);
+            result = method.getResponseBodyAsString();
+            method.releaseConnection();
+            System.out.println(statusCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] content = result.split("\n");
+        Object[][] data = new Object[][] {};
+        for (String line : content) {
+            data = ArrayUtils.add(data, line.split("\t"));
+        }
+        return data;
+    }
+
+    @DataProvider(name = "db_provider")
+    public Object[][] getDataFromDB() throws SQLException {
+        Object[][] data = new Object[][] {};
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", "postgres");
+        connectionProps.put("password", "admin");
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/test", connectionProps);
+            statement = connection.createStatement();
+            String query = "SELECT * FROM public.\"Cities\"";
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()){
+                String city = rs.getString("Name");
+                boolean isBusiness = rs.getBoolean("isBusiness");
+                data = ArrayUtils.add(data, new Object[] {city, isBusiness});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (statement != null){
+                statement.close();
+            }
+            if (connection != null){
+                connection.close();
+            }
+        }
+        return data;
+    }
+
     private void sampleSearch(String destination, boolean isBusiness) throws Exception {
         SearchPage searchPage = PageFactory.init(driver, SearchPage.class);
 
@@ -68,5 +141,23 @@ public class SampleSearchTestNGTest {
     @Test(dataProvider = "sample_provider", dataProviderClass = StaticProvider.class)
     public void testSampleSearchClassProvider(String destination, boolean isBusiness) throws Exception {
         sampleSearch(destination, isBusiness);
+    }
+    @Parameters({"destination", "isBusiness"})
+    @Test
+    public void testParamsFromTestNGXML(String destination, String isBusiness) throws Exception {
+        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
+    }
+    @Test(dataProvider = "file_provider")
+    public void testSampleSearchFromFile(String destination, String isBusiness) throws Exception {
+        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
+    }
+    @Test(dataProvider = "service_provider")
+    public void testSampleSearchFromService(String destination, String isBusiness) throws Exception {
+        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
+    }
+
+    @Test(dataProvider = "db_provider")
+    public void testSampleSearchFromDB(String destination, String isBusiness) throws Exception {
+        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
     }
 }
