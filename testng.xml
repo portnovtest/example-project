@@ -9,6 +9,7 @@
                     <include name="testSampleSearchClassProvider"/>
                     <include name="testSampleSearchFromFile"/>
                     <include name="testSampleSearchFromService"/>
+                    <include name="testSampleSearchFromExcel"/>
                     <include name="setUp"/>
                     <include name="tearDown"/>
                 </methods>

@@ -10,6 +10,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.*;
@@ -121,6 +125,20 @@ public class SampleSearchTestNGTest {
         return data;
     }
 
+    @DataProvider(name = "excel_provider")
+    public Object[][] getDataFromExcel() throws Exception {
+        Object[][] data = new Object[][] {};
+        Workbook book = new XSSFWorkbook(new File("./src/test/resources/book.xlsx"));
+        Sheet sheet = book.getSheet("Locations");
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            String city = row.getCell(0).getStringCellValue();
+            boolean isBusiness = row.getCell(1).getBooleanCellValue();
+            data = (Object[][]) ArrayUtils.add(data, new Object[] {city, isBusiness});
+        }
+        book.close();
+        return data;
+    }
     private void sampleSearch(String destination, boolean isBusiness) throws Exception {
         SearchPage searchPage = PageFactory.init(driver, SearchPage.class);
 
@@ -159,5 +177,10 @@ public class SampleSearchTestNGTest {
     @Test(dataProvider = "db_provider")
     public void testSampleSearchFromDB(String destination, String isBusiness) throws Exception {
         sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
+    }
+
+    @Test(dataProvider = "excel_provider")
+    public void testSampleSearchFromExcel(String destination, boolean isBusiness) throws Exception {
+        sampleSearch(destination, isBusiness);
     }
 }
