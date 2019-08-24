@@ -39,7 +39,7 @@ public class Control {
     public WebElement element(int index){
         return getDriver().findElements(locator).get(index);
     }
-    public boolean exits(long timeout){
+    public boolean exists(long timeout){
         WebDriverWait wait = new WebDriverWait(getDriver(), timeout);
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(locator));
@@ -58,7 +58,7 @@ public class Control {
         return true;
     }
     public boolean exists(){
-        return exits(TIMEOUT);
+        return exists(TIMEOUT);
     }
     public boolean visible(){
         return visible(TIMEOUT);
