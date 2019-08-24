@@ -29,22 +29,21 @@ import java.util.Properties;
 import static org.testng.Assert.assertTrue;
 
 public class SampleSearchTestNGTest {
-    private WebDriver driver;
+    //private WebDriver driver;
 
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
         DesiredCapabilities cap = new DesiredCapabilities();
         Driver.add(Configuration.get("browser"),cap);
-        driver = Driver.current();
-        driver.get(Configuration.get("url"));
+        Driver.current().get(Configuration.get("url"));
 
     }
     @AfterMethod(alwaysRun = true)
     public void tearDown(){
-        driver.quit();
+        Driver.current().quit();
     }
 
-    @DataProvider(name = "inclass_provider")
+    @DataProvider(name = "inclass_provider", parallel = true)
     public Object[][] createData(){
         return new Object[][] {
                 {"London", true},
@@ -53,7 +52,7 @@ public class SampleSearchTestNGTest {
     }
 
     public static class StaticProvider {
-        @DataProvider(name = "sample_provider")
+        @DataProvider(name = "sample_provider", parallel = true)
         public static Object[][] staticData(){
             return new Object[][] {
                     {"Leeds", true},
@@ -62,7 +61,7 @@ public class SampleSearchTestNGTest {
         }
     }
 
-    @DataProvider(name = "file_provider")
+    @DataProvider(name = "file_provider", parallel = true)
     public Object[][] getDataFromFile() throws IOException {
         List<String> content = FileUtils.readLines(new File("./src/test/resources/data.csv")
                 , Charset.defaultCharset());
@@ -73,7 +72,7 @@ public class SampleSearchTestNGTest {
         return data;
     }
 
-    @DataProvider(name = "service_provider")
+    @DataProvider(name = "service_provider", parallel = true)
     public Object[][] getDataFromService(){
         HttpClient client = new HttpClient();
         GetMethod method = new GetMethod("http://localhost:4999/test");
@@ -125,7 +124,7 @@ public class SampleSearchTestNGTest {
         return data;
     }
 
-    @DataProvider(name = "excel_provider")
+    @DataProvider(name = "excel_provider", parallel = true)
     public Object[][] getDataFromExcel() throws Exception {
         Object[][] data = new Object[][] {};
         Workbook book = new XSSFWorkbook(new File("./src/test/resources/book.xlsx"));
@@ -140,7 +139,7 @@ public class SampleSearchTestNGTest {
         return data;
     }
     private void sampleSearch(String destination, boolean isBusiness) throws Exception {
-        SearchPage searchPage = PageFactory.init(driver, SearchPage.class);
+        SearchPage searchPage = PageFactory.init(Driver.current(), SearchPage.class);
 
         searchPage.editDestination.setText(destination);
         searchPage.buttonDownShevron.click();
@@ -174,10 +173,10 @@ public class SampleSearchTestNGTest {
         sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
     }
 
-    @Test(dataProvider = "db_provider")
-    public void testSampleSearchFromDB(String destination, String isBusiness) throws Exception {
-        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
-    }
+//    @Test(dataProvider = "db_provider")
+//    public void testSampleSearchFromDB(String destination, String isBusiness) throws Exception {
+//        sampleSearch(destination, isBusiness.equalsIgnoreCase("true"));
+//    }
 
     @Test(dataProvider = "excel_provider")
     public void testSampleSearchFromExcel(String destination, boolean isBusiness) throws Exception {

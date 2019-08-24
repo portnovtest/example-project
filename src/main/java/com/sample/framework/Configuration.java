@@ -1,7 +1,9 @@
 package com.sample.framework;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.Properties;
 
 public class Configuration {
@@ -12,7 +14,10 @@ public class Configuration {
     public static void load() throws IOException {
         Configuration config = new Configuration();
         properties = new Properties();
-
+        Enumeration<URL> enumerator = config.getClass().getClassLoader().getResources("/");
+        while (enumerator.hasMoreElements()){
+            System.out.println(enumerator.nextElement());
+        }
         InputStream is = new FileInputStream(new File("config.properties"));
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 

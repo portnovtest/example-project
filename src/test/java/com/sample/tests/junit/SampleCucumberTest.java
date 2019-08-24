@@ -1,10 +1,19 @@
 package com.sample.tests.junit;
 
-import io.cucumber.junit.Cucumber;
+import com.github.mkolisnyk.cucumber.runner.ExtendedCucumberOptions;
+import com.github.mkolisnyk.cucumber.runner.ExtendedParallelScenarioCucumber;;
 import io.cucumber.junit.CucumberOptions;
 import org.junit.runner.RunWith;
 
-@RunWith(Cucumber.class)
+
+@RunWith(ExtendedParallelScenarioCucumber.class)
+@ExtendedCucumberOptions(
+        threadsCount = 3,
+        outputFolder = "build/",
+        detailedReport = true,
+        detailedAggregatedReport = true,
+        jsonReport = "build/cucumber.json"
+)
 @CucumberOptions(
         features = {"./src/test/java/com/sample/tests/features"},
         glue = {"com/sample/tests/steps"},

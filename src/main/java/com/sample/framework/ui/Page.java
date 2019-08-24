@@ -15,16 +15,16 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Page {
 
-    public static final long TIMOUT = Configuration.timeout();
-    private static Page currentPage = null;
+    private static final long TIMOUT = Configuration.timeout();
+    private static ConcurrentHashMap<String,Page> currentPages = new ConcurrentHashMap<>();
 
     private WebDriver driver;
 
     public Page(WebDriver driverValue) {
-        super();
         this.driver = driverValue;
     }
 
@@ -45,11 +45,11 @@ public class Page {
     }
 
     public static Page getCurrent() {
-        return currentPage;
+        return currentPages.get(Driver.getThreadName());
     }
 
     public static void setCurrent(Page newPage) {
-        Page.currentPage = newPage;
+        currentPages.put(Driver.getThreadName(), newPage);
     }
 
     public WebDriver getDriver() {
